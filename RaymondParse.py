@@ -11,7 +11,7 @@ def main():
 
 
     
-#file = open('networkconfigoutput.txt', 'wb')
+file = open('networkconfigoutput.txt', 'wb')
     get_network_info(file)
 
 
@@ -19,14 +19,13 @@ def main():
 
 
 
-    #file.close()
+    file.close()
 
     #os.startfile("networkconfigoutput.txt", "print")
 
-/*
-runs the ipconfig command and parses it to find the useful info only
-returns a list: result(ipv6, ipv4, subnet mask)
-*/
+'''runs the ipconfig command and parses it to find the useful info only
+returns a list: result(ipv6, ipv4, subnet mask)'''
+
 def get_network_info(file):
     #Header to identify our target info
     ipv4_id = 'IPv4 Address'
@@ -50,7 +49,7 @@ def get_network_info(file):
         str = line.split('.', 1)[0]
         #check header
         if str == ipv4_id or str == ipv6_id or str == subnet_id:
-            When we find a target save to result list
+            #When we find a target save to result list
             str1 = line.split(':', 1)[1].strip()
             result.append(str1)
         #file.write(line)
@@ -60,11 +59,11 @@ def get_network_info(file):
     print(result)
     return result
 
-/*
-Get input from the user, call function to identify what type it is.
+
+'''Get input from the user, call function to identify what type it is.
 If it an ip address get the fqdn or vice versa
-Finally call the ping and tracert commands with the info
-*/
+Finally call the ping and tracert commands with the info'''
+
 def get_ip_fqdn(file):
     user = input('Enter a ip address or fqdn')
 
@@ -86,9 +85,9 @@ def get_ip_fqdn(file):
         ping(ipv6, '-6', file)
         tracert(ipv6, '-6', file)
 
-/*
-We are just running ping and print results to a file
-*/
+
+'''We are just running ping and print results to a file'''
+
 def ping(ip, option, file):
     ping_result = subprocess.Popen(['ping', ip, option], stdout=subprocess.PIPE)
 
@@ -104,9 +103,9 @@ def ping(ip, option, file):
         #file.write(b'\r\n')
 
 
-/*
-We are just running tracert and print results to a file
-*/
+
+'''We are just running tracert and print results to a file'''
+
 def tracert(ip, option, file):
     tracert_result = subprocess.Popen(['tracert', option, ip], stdout=subprocess.PIPE)
 
@@ -123,9 +122,9 @@ def tracert(ip, option, file):
 
 
 
-/*
-Given an ip address(ipv4 or ipv6) get the fqdn
-*/
+
+'''Given an ip address(ipv4 or ipv6) get the fqdn'''
+
 def get_fqdn(ip):
     result = 'Fail'
     fqdn_nslookup_response = subprocess.Popen(["nslookup", ip], stdout=subprocess.PIPE)
@@ -140,9 +139,9 @@ def get_fqdn(ip):
     #print(result)
     return result
 
-/*
-Given a fqdn get the ipv6 address
-*/
+
+'''Given a fqdn get the ipv6 address'''
+
 def get_ip(fqdn):
     result = 'Fail'
     ip_nslookup_response = subprocess.Popen(["nslookup", fqdn], stdout=subprocess.PIPE)
@@ -157,7 +156,8 @@ def get_ip(fqdn):
     #print(result)
     return result
 
-#function returns 1 for ipv4, 2 for ipv6, and 3 for fqdn
+'''function returns 1 for ipv4, 2 for ipv6, and 3 for fqdn'''
+
 def what_is(user):
     if ':' in user:
         result = 2
