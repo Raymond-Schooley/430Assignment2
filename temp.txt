@@ -1,0 +1,8 @@
+# 430 Assignment 2 
+
+Group 5 members: Raymond, Alec, Tim
+
+Programming language(s) used: Python
+
+Python modules used: socket, netifaces, subprocess, os
+
