@@ -19,7 +19,7 @@ REQUIREMENTS
 
 Operating System: Windows
 
-Programming Language: Python
+Programming Language: Python 3.6
 
 Modules: subprocess, os, re
 
