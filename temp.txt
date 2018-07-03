@@ -1,8 +1,52 @@
-# 430 Assignment 2 
 
-Group 5 members: Raymond, Alec, Tim
+TCSS 430 Assignment 2 - Group 5
+*******************************
 
-Programming language(s) used: Python
 
-Python modules used: socket, netifaces, subprocess, os
+INTRODUCTION
+------------
+
+This application was coded using Python and was an assignment for University of Washington Tacoma's
+TCSS 430 Networking and Distributed Systems class. 
+
+This application queries the operating system and runs several diagnostic tools on the network.
+The application then parses the output from the diagnostic tools and is formatted in a user-friendly
+command line interface and provides an option to print out the generated results.
+
+
+REQUIREMENTS
+------------
+
+Operating System: Windows
+
+Programming Language: Python
+
+Modules: subprocess, os, re
+
+NOTE: As of July 2018, these modules are a part of the Python Standard Library and no further installation
+      is needed.
+
+
+CONFIGURATION & RUNTIME
+-----------------------
+
+When first starting the application, the application prints out the users network information using
+the ipconfig command. The information printed are the user's IPv6 and IPv4 addresses and the subnet mask.
+
+The user then is shown a prompt to input a Fully Qualified Domain Name (FQDN) or an IP address to run
+the commands ping and tracert. The appropriate command options are dynamically run based on the user
+input. 
+
+The outputs from the diagnostic tools are saved onto networkconfigoutput.txt.
+
+At the end of the application, the user is given an option to print out the results saved onto 
+networkconfigoutput.txt.
+
+
+AUTHORS
+-------
+
+Alec Bain
+Raymond Von Schooley
+Timothy Yang
 
