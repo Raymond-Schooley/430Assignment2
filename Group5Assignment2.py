@@ -1,3 +1,8 @@
+'''TCSS430 Assignment2
+    Raymond Schooley
+    Alec Bain
+    Timothy Yang'''
+
 import subprocess
 import os
 import re
@@ -6,14 +11,21 @@ import re
 
 
 def main():
-    file = open('networkconfigoutput.txt', 'wb')
+    file = open('networkconfigoutput.txt', 'w')
+    print("Running ipconfig to gather network information")
     get_network_info(file)
 
     get_ip_fqdn(file)
 
     file.close()
 
-    #os.startfile("networkconfigoutput.txt", "print")
+    userprint = input('Would you like to print these results to the default printer? Y for yes, anything else for no ')
+    if userprint == "Y":
+        os.startfile("networkconfigoutput.txt", "print")
+    else:
+        pass
+    print('Network diagnostics complete!')
+    exit
 
 
 '''runs the ipconfig command and parses it to find the useful info only
@@ -25,6 +37,7 @@ def get_network_info(file):
     ipv4_id = 'IPv4 Address'
     ipv6_id = 'IPv6 Address'
     subnet_id = 'Sunet Mask '
+  
     # list to return all info at once
     result = list()
     # Ipconfig will get ipv4, ipv6 and subnet mask
@@ -42,14 +55,16 @@ def get_network_info(file):
         str = line.split('.', 1)[0]
         # check header
         if str == ipv4_id or str == ipv6_id or str == subnet_id:
+
             # When we find a target save to result list
-            str1 = line.split(':', 1)[1].strip()
-            result.append(str1)
-        # file.write(line)
+            str1 = line.strip()
+            print(str1)
+            #result.append(str1)
+            #result.append('\n')
+        file.write(line)
 
-        # file.write(b'\r\n')
+        file.write('\r\n')
 
-    print(result)
     return result
 
 
@@ -59,7 +74,7 @@ Finally call the ping and tracert commands with the info'''
 
 
 def get_ip_fqdn(file):
-    user = input('Enter a ip address or fqdn')
+    user = input('Enter a ip address or fqdn to ping and traceroute ')
 
     # ipv4, ipv6, or fqdn?
     type = what_is(user)
@@ -89,13 +104,16 @@ def ping(ip, option, file):
 
     for line in ping_result.stdout:
 
-        line = line.rstrip()
-
+        # Apparently this returns something other than string so we need to convert to string
+        line = line.decode('utf-8')
+        line = line.strip()
+        # get rid of weird characters
+        line = re.sub("[']", '', line)
         print(line)
 
-        # file.write(line)
+        file.write(line)
 
-        # file.write(b'\r\n')
+        file.write('\r\n')
 
 
 '''We are just running tracert and print results to a file'''
@@ -107,13 +125,16 @@ def tracert(ip, option, file):
 
     for line in tracert_result.stdout:
 
-        line = line.rstrip()
-
+        # Apparently this returns something other than string so we need to convert to string
+        line = line.decode('utf-8')
+        line = line.strip()
+        # get rid of weird characters
+        line = re.sub("[']", '', line)
         print(line)
 
-        # file.write(line)
+        file.write(line)
 
-        # file.write(b'\r\n')
+        file.write('\r\n')
 
 
 '''Given an ip address(ipv4 or ipv6) get the fqdn'''
@@ -140,9 +161,6 @@ def get_fqdn(ip):
 
 def get_ip(fqdn):
     result = 'Fail'
-    #Make sure we parse past the info about our computer
-    remote = 'Non - authoritative answer'
-    isRemote = False
     ip_nslookup_response = subprocess.Popen(
         ["nslookup", fqdn], stdout=subprocess.PIPE)
     for line in ip_nslookup_response.stdout:
@@ -151,10 +169,7 @@ def get_ip(fqdn):
         line = re.sub("[b']", '', line)
         print (line)
         temp = line.split(':', 1)
-        if temp[0].strip() == remote:
-            isRemote = True
-        if isRemote and (temp[0].strip() == 'Addresses' or 'Address'):
-
+        if temp[0].strip() == 'Addresses':
             result = temp[1].strip()
     # print(result)
     return result
