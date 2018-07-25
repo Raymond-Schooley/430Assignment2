@@ -5,7 +5,6 @@
 
 import subprocess
 import os
-import re
 
 # program driver
 
@@ -36,7 +35,7 @@ def get_network_info(file):
     # Header to identify our target info
     ipv4_id = 'IPv4 Address'
     ipv6_id = 'IPv6 Address'
-    subnet_id = 'Sunet Mask '
+    subnet_id = 'Subnet Mask'
   
     # list to return all info at once
     result = list()
@@ -49,10 +48,9 @@ def get_network_info(file):
         # Apparently this returns something other than string so we need to convert to string
         line = line.decode('utf-8')
         line = line.strip()
-        # get rid of weird characters
-        line = re.sub("[b']", '', line)
+
         # break of the header part
-        str = line.split('.', 1)[0]
+        str = line.split('.', 1)[0].strip()
         # check header
         if str == ipv4_id or str == ipv6_id or str == subnet_id:
 
@@ -108,7 +106,6 @@ def ping(ip, option, file):
         line = line.decode('utf-8')
         line = line.strip()
         # get rid of weird characters
-        line = re.sub("[']", '', line)
         print(line)
 
         file.write(line)
@@ -129,7 +126,6 @@ def tracert(ip, option, file):
         line = line.decode('utf-8')
         line = line.strip()
         # get rid of weird characters
-        line = re.sub("[']", '', line)
         print(line)
 
         file.write(line)
@@ -142,12 +138,13 @@ def tracert(ip, option, file):
 
 def get_fqdn(ip):
     result = 'Fail'
+
     fqdn_nslookup_response = subprocess.Popen(
         ["nslookup", ip], stdout=subprocess.PIPE)
+
     for line in fqdn_nslookup_response.stdout:
         line = line.decode('utf-8')
         line = line.strip()
-        line = re.sub("[b']", '', line)
         #print (line)
         temp = line.split(':', 1)
         if temp[0].strip() == 'Name':
@@ -161,17 +158,26 @@ def get_fqdn(ip):
 
 def get_ip(fqdn):
     result = 'Fail'
+
+    #Make sure to read the second address
+    name = 'Name'
+    right_address = False
+
     ip_nslookup_response = subprocess.Popen(
         ["nslookup", fqdn], stdout=subprocess.PIPE)
     for line in ip_nslookup_response.stdout:
         line = line.decode('utf-8')
         line = line.strip()
-        line = re.sub("[b']", '', line)
-        print (line)
+        print(line)
         temp = line.split(':', 1)
-        if temp[0].strip() == 'Addresses':
+
+        header = temp[0].strip()
+
+        if header == name:
+            right_address = True
+        if right_address and (header == 'Addresses' or header == 'Address'):
             result = temp[1].strip()
-    # print(result)
+            print('Result is : ' + result)
     return result
 
 
