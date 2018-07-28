@@ -28,6 +28,7 @@ def main():
     get_ftp_status(file, address)
     get_ssh_status(file, address)
     get_ldap_status(file, address)
+    get_dns_status(file, address)
 
     file.close()
 
@@ -133,6 +134,18 @@ def get_ldap_status(file, address):
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     result = sock.connect_ex((address, 389))
+    if result == 0:
+        print('Success')
+    else:
+        print('Failed')
+
+
+def get_dns_status(file, address):
+    file.write('DNS Status:  ')
+    print('DNS Status:  ')
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex((address, 53))
     if result == 0:
         print('Success')
     else:
