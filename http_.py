@@ -12,4 +12,4 @@ def tryhttp(url):
     else:
         return False
 
-print(tryhttp('www.stealmylogin.com')) # unsecure site
+print(tryhttp('8.8.8.8')) # unsecure site

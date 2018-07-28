@@ -12,5 +12,5 @@ def trysmtp(url):
     except smtplib.SMTPException:
        return False
 
-print(trysmtp('sldfk'))
+# print(trysmtp('sldfk'))
 print(trysmtp('email@email.com'))

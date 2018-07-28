@@ -4,10 +4,12 @@
     Timothy Yang'''
 
 import subprocess
+import socket
 import os
 import smtplib
 import ssl
 import http.client
+from urllib.parse import urlparse
 from ftplib import FTP
 import xmlrpc.client
 
@@ -20,8 +22,12 @@ def main():
     get_network_info(file)
 
     address = get_ip_fqdn(file)
-
     get_smtp_status(file, address)
+    get_rpc_status(file, address)
+    get_http_status(file, address)
+    get_ftp_status(file, address)
+    get_ssh_status(file, address)
+    get_ldap_status(file, address)
 
     file.close()
 
@@ -36,61 +42,105 @@ def main():
 #Tries to open an RPC connection
 def get_rpc_status(file, address):
     file.write('RPC Status:  ')
-    proxy = xmlrpc.client.ServerProxy(str(address))
+    print('RPC Status:  ')
+
     try:
+        proxy = xmlrpc.client.ServerProxy(str(address))
         proxy.system.listMethods()
         file.write('Success')
+        print('Success')
+    except OSError:
+        file.write('Add http:// to domain name for RPC to work.')
+        print('Add http:// to domain name for RPC to work.')
     except xmlrpc.client.Error:
-        file.write('Partial Success (insufficient rights')
+        file.write('Partial Success (insufficient rights)')
+        print('Partial Success (insufficient rights)')
     except ConnectionRefusedError:
         file.write('Refused')
+        print('Refused')
     file.write('\r\n') 
             
 
 #Tries to open an SMTP connection
 def get_smtp_status(file, address):
     file.write('SMTP Status:  ')
+    print('SMTP Status:  ')
     try:
         smtplib.SMTP(str(address), 587)
         file.write('Success')
+        print('Success')
     except:
         file.write('Failed (invalid address)')
+        print('Failed (invalid address)')
     file.write('\r\n')
 
 #Tries to connect via HTTP and HTTPS
 def get_http_status(file, address):
     file.write('HTTP Status:  ')
-    connection = http.client.HTTPConnection(str(address))
-    try:
-        connection.request("GET", "/")
-        response = connection.getresponse()
-        file.write(r1.status + r1.reason)
-    except:
-        file.write('Failed ')
-    file.write('\r\n')
-    connection = http.client.HTTPSConnection(str(address))
+    print('HTTP Status:  ')
+    url = urlparse(address)
+    httpconn = http.client.HTTPConnection(url.path)
+    httpconn.request("HEAD", "/")
+    httpresponse = httpconn.getresponse()
+    if (httpresponse.status < 400):
+        file.write('Success')
+        print('Success')
+    else:
+        file.write('Failed')
+        print('Failed')
+
     file.write('HTTPS Status:  ')
+    print('HTTPS Status:  ')
+
     try:
-        connection.request("GET", "/")
-        response = connection.getresponse()
-        file.write(r1.status + r1.reason)
+        httpsconn = http.client.HTTPSConnection(url.path)
+        httpsconn.request("HEAD", "/")
+        file.write('Success')
+        print('Success')
     except:
-        file.write('Failed ')
-    file.write('\r\n')
-'''runs the ipconfig command and parses it to find the useful info only
-returns a list: result(ipv6, ipv4, subnet mask)'''
+        file.write('Failed')
+        print('Failed')
 
 #Tries to connect via FTP
 def get_ftp_status(file, address):
     file.write('FTP Status:  ')
+    print('FTP Status:  ')
     try:
         ftp = FTP(str(address))
         ftp.getwelcome()
         file.write('Success')
+        print('Success')
     except:
         file.write('Failed')
+        print('Failed')
     file.write('\r\n')
 
+def get_ssh_status(file, address):
+    file.write('SSH Status:  ')
+    print('SSH Status:  ')
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex((address, 22))
+    if result == 0:
+        print('Success')
+    else:
+        print('Failed')
+
+
+def get_ldap_status(file, address):
+    file.write('LDAP Status:  ')
+    print('LDAP Status:  ')
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex((address, 389))
+    if result == 0:
+        print('Success')
+    else:
+        print('Failed')
+
+
+'''runs the ipconfig command and parses it to find the useful info only
+returns a list: result(ipv6, ipv4, subnet mask)'''
 def get_network_info(file):
     # Header to identify our target info
     ipv4_id = 'IPv4 Address'
@@ -140,17 +190,17 @@ def get_ip_fqdn(file):
     # Find corresponding info, call ping and tracert with appropriate option
     if type == 1:
         print('You entered a ipv4 address, the fqdn is ' + get_fqdn(user))
-        ping(user, '-4', file)
-        tracert(user, '-4', file)
+        # ping(user, '-4', file)
+        # tracert(user, '-4', file)
     elif type == 2:
         print('You entered a ipv6 address, the fqdn is ' + get_fqdn(user))
-        ping(user, '-6', file)
-        tracert(user, '-6', file)
+        # ping(user, '-6', file)
+        # tracert(user, '-6', file)
     else:
         ipv6 = get_ip(user)
         print('You entered a fully qualified domain name, the ipv6 address is ' + ipv6)
-        ping(ipv6, '-6', file)
-        tracert(ipv6, '-6', file)
+        # ping(ipv6, '-6', file)
+        # tracert(ipv6, '-6', file)
     return user
 
 '''We are just running ping and print results to a file'''

@@ -1,0 +1,59 @@
+
+Windows IP Configuration
+
+
+Ethernet adapter Ethernet:
+
+Media State . . . . . . . . . . . : Media disconnected
+Connection-specific DNS Suffix  . :
+
+Ethernet adapter vEthernet (DockerNAT):
+
+Connection-specific DNS Suffix  . :
+Link-local IPv6 Address . . . . . : fe80::905d:d329:8ca9:ee8b%8
+IPv4 Address. . . . . . . . . . . : 10.0.75.1
+Subnet Mask . . . . . . . . . . . : 255.255.255.0
+Default Gateway . . . . . . . . . :
+
+Ethernet adapter VirtualBox Host-Only Network:
+
+Connection-specific DNS Suffix  . :
+Link-local IPv6 Address . . . . . : fe80::656a:d1c9:b215:8d1d%10
+IPv4 Address. . . . . . . . . . . : 192.168.56.1
+Subnet Mask . . . . . . . . . . . : 255.255.255.0
+Default Gateway . . . . . . . . . :
+
+Wireless LAN adapter Local Area Connection* 1:
+
+Media State . . . . . . . . . . . : Media disconnected
+Connection-specific DNS Suffix  . :
+
+Wireless LAN adapter Local Area Connection* 3:
+
+Media State . . . . . . . . . . . : Media disconnected
+Connection-specific DNS Suffix  . :
+
+Wireless LAN adapter Wi-Fi:
+
+Connection-specific DNS Suffix  . : hsd1.wa.comcast.net.
+IPv6 Address. . . . . . . . . . . : 2601:602:9e80:d40:2089:47d9:10c4:abd4
+Temporary IPv6 Address. . . . . . : 2601:602:9e80:d40:9431:8096:b615:72be
+Link-local IPv6 Address . . . . . : fe80::2089:47d9:10c4:abd4%9
+IPv4 Address. . . . . . . . . . . : 192.168.0.13
+Subnet Mask . . . . . . . . . . . : 255.255.255.0
+Default Gateway . . . . . . . . . : fe80::ce40:d0ff:fe30:2802%9
+192.168.0.1
+
+Ethernet adapter Bluetooth Network Connection:
+
+Media State . . . . . . . . . . . : Media disconnected
+Connection-specific DNS Suffix  . :
+
+Ethernet adapter vEthernet (Default Switch):
+
+Connection-specific DNS Suffix  . :
+Link-local IPv6 Address . . . . . : fe80::d4bf:d153:8e08:f59e%12
+IPv4 Address. . . . . . . . . . . : 172.28.59.33
+Subnet Mask . . . . . . . . . . . : 255.255.255.240
+Default Gateway . . . . . . . . . :
+HTTP Status:  SuccessHTTPS Status:  SuccessFTP Status:  Success

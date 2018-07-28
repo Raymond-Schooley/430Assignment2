@@ -87,10 +87,15 @@ def get_ip_fqdn(file):
         ping(user, '-6', file)
         tracert(user, '-6', file)
     else:
-        ipv6 = get_ip(user)
-        print('You entered a fully qualified domain name, the ipv6 address is ' + ipv6)
-        ping(ipv6, '-6', file)
-        tracert(ipv6, '-6', file)
+        ip = get_ip(user)
+        ipv = what_is(ip)
+        if ipv == 1:
+            ipv = 4
+        else:
+            ipv = 6
+        print('You entered a fully qualified domain name, the ipv' + str(ipv) + 'address is ' + ip)
+        ping(ip, '-' + str(ipv), file)
+        tracert(ip, '-' + str(ipv), file)
 
 
 '''We are just running ping and print results to a file'''
