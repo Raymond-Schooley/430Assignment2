@@ -28,7 +28,7 @@ def main():
 
     #test remote host to see which services are active
     get_smtp_status(file, address)
-    get_rpc_status(file, address)
+    get_rpc_status(file, address, True)
     get_http_status(file, address)
     get_ftp_status(file, address)
     get_ssh_status(file, address)
@@ -48,9 +48,10 @@ def main():
 #Tries to open an RPC connection
 #param file - Output file to save all results
 #param address - ip or fqdn of remote host
-def get_rpc_status(file, address):
-    file.write('RPC Status:  ')
-    print('RPC Status:  ')
+def get_rpc_status(file, address, flag):
+    if flag:
+        file.write('RPC Status:  ')
+        print('RPC Status:  ')
 
     try:
         #establish connection
@@ -62,8 +63,11 @@ def get_rpc_status(file, address):
         print('Success')
     #print failing result
     except OSError:
-        file.write('Add http:// to domain name for RPC to work.')
-        print('Add http:// to domain name for RPC to work.')
+        if 'http://' in address:
+            print('Invalid address')
+        else:
+            address = 'http://' + address
+            get_rpc_status(file, address, False)
     except xmlrpc.client.Error:
         file.write('Partial Success (insufficient rights)')
         print('Partial Success (insufficient rights)')
@@ -111,7 +115,8 @@ def get_http_status(file, address):
         # print failing result
         file.write('Failed')
         print('Failed')
-
+    file.write('\r\n')
+    
     file.write('HTTPS Status:  ')
     print('HTTPS Status:  ')
 
@@ -127,7 +132,7 @@ def get_http_status(file, address):
         # print failing result
         file.write('Failed')
         print('Failed')
-
+    file.write('\r\n')
 #Tries to connect via FTP
 #param file - Output file to save all results
 #param address - ip or fqdn of remote host
@@ -156,14 +161,19 @@ def get_ssh_status(file, address):
     print('SSH Status:  ')
 
     #connect and test
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex((address, 22))
-    if result == 0:
-        # print successful result
-        print('Success')
-    else:
-        # print failing result
-        print('Failed')
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((address, 22))
+        if result == 0:
+            file.write('Success')
+            print('Success')
+        else:
+            file.write('Failed')
+            print('Failed')
+    except:
+        file.write('Failed')
+        print('Failed, address error')
+    file.write('\r\n')
 
 #Tries to connect to remote hosts well-known ldap port
 #param file - Output file to save all results
@@ -173,14 +183,19 @@ def get_ldap_status(file, address):
     print('LDAP Status:  ')
 
     # connect and test
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex((address, 389))
-    if result == 0:
-        # print successful result
-        print('Success')
-    else:
-        # print failing result
-        print('Failed')
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((address, 389))
+        if result == 0:
+            file.write('Success')
+            print('Success')
+        else:
+            file.write('Failed')
+            print('Failed')
+    except:
+        file.write('Failed')
+        print('Failed, address error')
+    file.write('\r\n')
 
 #Tries to connect to remote hosts well-known dns port
 #param file - Output file to save all results
@@ -190,14 +205,19 @@ def get_dns_status(file, address):
     print('DNS Status:  ')
 
     # connect and test
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex((address, 53))
-    if result == 0:
-        # print successful result
-        print('Success')
-    else:
-        # print failing result
-        print('Failed')
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((address, 53))
+        if result == 0:
+            file.write('Success')
+            print('Success')
+        else:
+            file.write('Failed')
+            print('Failed')
+    except:
+        file.write('Failed')
+        print('Failed, address error')
+    file.write('\r\n')
 
 
 '''runs the ipconfig command and parses it to find the useful info only
