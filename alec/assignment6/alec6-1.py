@@ -1,7 +1,7 @@
-# TCSS430 Assignment6
-#     Raymond Schooley
-#     Alec Bain
-#     Timothy Yang
+'''TCSS430 Assignment2
+    Raymond Schooley
+    Alec Bain
+    Timothy Yang'''
 
 import subprocess
 import socket
@@ -13,22 +13,16 @@ from urllib.parse import urlparse
 from ftplib import FTP
 import xmlrpc.client
 
-# program driver.  Show user's network information.  Ask user to enter an ip address
-#or a fully-qualified domain name before testing to see if various services are active on
-#the romet host.
+# program driver
+
 def main():
-    #print everything to an output file
     file = open('networkconfigoutput.txt', 'w')
     print("Running ipconfig to gather network information")
-    #Get info for local host
     get_network_info(file)
 
-    #ask user for ip address or fqdn
     address = get_ip_fqdn(file)
-
-    #test remote host to see which services are active
     get_smtp_status(file, address)
-    get_rpc_status(file, address)
+    get_rpc_status(file, address, True)
     get_http_status(file, address)
     get_ftp_status(file, address)
     get_ssh_status(file, address)
@@ -36,7 +30,7 @@ def main():
     get_dns_status(file, address)
 
     file.close()
-    #Print results
+
     userprint = input('Would you like to print these results to the default printer? Y for yes, anything else for no ')
     if userprint == "Y":
         os.startfile("networkconfigoutput.txt", "print")
@@ -46,24 +40,22 @@ def main():
     exit
 
 #Tries to open an RPC connection
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
-def get_rpc_status(file, address):
-    file.write('RPC Status:  ')
-    print('RPC Status:  ')
+def get_rpc_status(file, address, flag):
+    if flag:
+        file.write('RPC Status:  ')
+        print('RPC Status:  ')
 
     try:
-        #establish connection
         proxy = xmlrpc.client.ServerProxy(str(address))
-        #test connection
         proxy.system.listMethods()
-        #print successful result
         file.write('Success')
         print('Success')
-    #print failing result
     except OSError:
-        file.write('Add http:// to domain name for RPC to work.')
-        print('Add http:// to domain name for RPC to work.')
+        if 'http://' in address:
+            print('Invalid address')
+        else:
+            address = 'http://' + address
+            get_rpc_status(file, address, False)
     except xmlrpc.client.Error:
         file.write('Partial Success (insufficient rights)')
         print('Partial Success (insufficient rights)')
@@ -74,130 +66,114 @@ def get_rpc_status(file, address):
             
 
 #Tries to open an SMTP connection
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
 def get_smtp_status(file, address):
     file.write('SMTP Status:  ')
     print('SMTP Status:  ')
     try:
-        # establish connection and test it
         smtplib.SMTP(str(address), 587)
         file.write('Success')
-        # print successful result
         print('Success')
     except:
-        # print failing result
         file.write('Failed (invalid address)')
         print('Failed (invalid address)')
     file.write('\r\n')
 
 #Tries to connect via HTTP and HTTPS
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
 def get_http_status(file, address):
     file.write('HTTP Status:  ')
     print('HTTP Status:  ')
     url = urlparse(address)
-    # establish connection
-    httpconn = http.client.HTTPConnection(url.path)
-    #test connection
-    httpconn.request("HEAD", "/")
-    httpresponse = httpconn.getresponse()
-    if (httpresponse.status < 400):
-        # print successful result
+    try:
+        httpconn = http.client.HTTPConnection(url.path)
+        httpconn.request("HEAD", "/")
+        httpresponse = httpconn.getresponse()
         file.write('Success')
         print('Success')
-    else:
-        # print failing result
+    except:
         file.write('Failed')
         print('Failed')
-
+    file.write('\r\n')
+    
     file.write('HTTPS Status:  ')
     print('HTTPS Status:  ')
 
     try:
-        # establish connection
         httpsconn = http.client.HTTPSConnection(url.path)
-        #test connection
         httpsconn.request("HEAD", "/")
-        # print successful result
         file.write('Success')
         print('Success')
     except:
-        # print failing result
         file.write('Failed')
         print('Failed')
-
+    file.write('\r\n')
+    
 #Tries to connect via FTP
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
 def get_ftp_status(file, address):
     file.write('FTP Status:  ')
     print('FTP Status:  ')
     try:
-        # establish connection
         ftp = FTP(str(address))
-        #test connection
         ftp.getwelcome()
-        # print successful result
         file.write('Success')
         print('Success')
     except:
-        # print failing result
         file.write('Failed')
         print('Failed')
     file.write('\r\n')
 
-#Tries to connect to remote hosts well-known ssh port
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
 def get_ssh_status(file, address):
     file.write('SSH Status:  ')
     print('SSH Status:  ')
 
-    #connect and test
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex((address, 22))
-    if result == 0:
-        # print successful result
-        print('Success')
-    else:
-        # print failing result
-        print('Failed')
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((address, 22))
+        if result == 0:
+            file.write('Success')
+            print('Success')
+        else:
+            file.write('Failed')
+            print('Failed')
+    except:
+        file.write('Failed')
+        print('Failed, address error')
+    file.write('\r\n')
 
-#Tries to connect to remote hosts well-known ldap port
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
+
 def get_ldap_status(file, address):
     file.write('LDAP Status:  ')
     print('LDAP Status:  ')
-
-    # connect and test
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex((address, 389))
-    if result == 0:
-        # print successful result
-        print('Success')
-    else:
-        # print failing result
-        print('Failed')
-
-#Tries to connect to remote hosts well-known dns port
-#param file - Output file to save all results
-#param address - ip or fqdn of remote host
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((address, 389))
+        if result == 0:
+            file.write('Success')
+            print('Success')
+        else:
+            file.write('Failed')
+            print('Failed')
+    except:
+        file.write('Failed')
+        print('Failed, address error')
+    file.write('\r\n')
+    
 def get_dns_status(file, address):
     file.write('DNS Status:  ')
     print('DNS Status:  ')
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex((address, 53))
+        if result == 0:
+            file.write('Success')
+            print('Success')
+        else:
+            file.write('Failed')
+            print('Failed')
+    except:
+        file.write('Failed')
+        print('Failed, address error')
+    file.write('\r\n')
 
-    # connect and test
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex((address, 53))
-    if result == 0:
-        # print successful result
-        print('Success')
-    else:
-        # print failing result
-        print('Failed')
 
 
 '''runs the ipconfig command and parses it to find the useful info only
@@ -363,6 +339,5 @@ def what_is(user):
     else:
         result = 1
     return result
-
 
 main()
